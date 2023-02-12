@@ -7,7 +7,8 @@ export const HeadContainer = styled.div`
     justify-content:space-around;
     line-height:85px;
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-    background-color:white;
+    background-color:#5E75EB;
+    color: white;
 `;
 
 export const HeadLogo = styled.div`
