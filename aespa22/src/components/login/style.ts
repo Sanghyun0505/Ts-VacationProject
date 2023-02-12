@@ -16,7 +16,7 @@ export const LoginForm = styled.form`
 
 export const LoginTitle = styled.div`
     text-align: center;
-    //font-weight: bold;
+    font-weight: bold;
     font-size:50px;
     line-height:100px;
 `;
@@ -59,6 +59,7 @@ export const LoginBtn = styled.button`
     background-color: #5E75EB;
     font-size:15px;
     color:white;
+    margin-top:30px;
 `;
 
 export const LoginFromGoolge = styled.button`
@@ -73,6 +74,7 @@ export const LoginFromGoolge = styled.button`
     text-align: center;
     padding-right: 50px;
     color:black;
+    line-height:30px;
 `;
 
 export const GoogleImg = styled.img`
@@ -80,4 +82,5 @@ export const GoogleImg = styled.img`
     height: 20px;
     float: left;
     margin-left: 20px;
+    margin-top:5px;
 `;

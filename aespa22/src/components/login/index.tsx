@@ -1,26 +1,64 @@
 import * as S from './style';
 import { useNavigate } from 'react-router-dom';
 import google from '.././.././assets/logo/google.png';
-import { auth } from '../../config/firebase-config';
+import { useCallback, useState } from 'react';
+import {
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from 'config/firebase-config';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useState } from 'react';
-
 export default function Login(){
     const navigate = useNavigate();
-
+    const [id,SetId] = useState<string>('');
+    const [pw,SetPw] = useState<string>('');
+    const [user, setUser] = useState<any>({});
     const [userData, setUserData] = useState<any>(null);
+
+    onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+    });
+
+    const onChange = useCallback((e:React.ChangeEvent<HTMLInputElement>)=>{
+        if(e.target.name === 'mail') SetId(e.target.value);
+        else SetPw(e.target.value);
+    },[]);
+
+    // const onLogin = () => {
+    //     if(id!=='' && pw!==''){
+    //         try {
+    //             const user = signInWithEmailAndPassword(
+    //                 auth,
+    //                 id,
+    //                 pw
+    //             );
+    //             console.log(user);
+    //         } catch (error:any) {
+    //             console.log(error.message);
+    //         }
+    //     }
+    // };
+
+    const onLogin = () => {
+        if(id!=='' && pw!==''){
+            localStorage.setItem('accessToken',pw);
+            SetId('');
+            SetPw('');
+            window.alert('로그인 성공!');
+        }
+        else window.alert('제대로 입력해주세요!');
+    };
 
     const handleGoogleLogin = () => {
         const provider = new GoogleAuthProvider(); // provider를 구글로 설정
-        const data = signInWithPopup(auth, provider);
-        data // popup을 이용한 signup
-        .then((data) => {
+        signInWithPopup(auth, provider) // popup을 이용한 signup
+          .then((data) => {
             setUserData(data.user); // user data 설정
-            console.log(data); // console에 UserCredentialImpl 출력
-        })
-        .catch((err) => {
+            console.log(data) // console로 들어온 데이터 표시
+          })
+          .catch((err) => {
             console.log(err);
-        });
+          });
     }
     return(
         <S.LoginContaienr>
@@ -31,8 +69,11 @@ export default function Login(){
                 <S.LoginInputContainer>
                     <div>
                         <S.LoginIdInput 
-                            type="text"
+                            type="email"
                             placeholder="test@email.com"
+                            name='mail'
+                            value={id}
+                            onChange={onChange}
                         />
                     </div>
 
@@ -40,24 +81,29 @@ export default function Login(){
                         <S.LoginPwInput 
                             type="password"
                             placeholder='비밀번호'
+                            name='pw'
+                            value={pw}
+                            onChange={onChange}
                         />
                     </div>
 
                     <div style={{marginTop:'30px'}}>
-                        <S.LoginBtn>로그인</S.LoginBtn>
+                        <S.LoginBtn onClick={onLogin}>로그인</S.LoginBtn>
+                        <div>{user?.email}</div>
                     </div>
 
-                    <div style={{cursor:'pointer'}} onClick={()=>navigate('/signin')}>| 회원가입 |</div>
+                    <div>
+                        <span>계정이 없으신가요? </span>
+                        <span style={{cursor:'pointer'}} onClick={()=>navigate('/signup')}> | 회원가입 |</span>
+                    </div>
 
                     <div style={{marginTop:'40px'}}>
                         <S.LoginFromGoolge onClick={handleGoogleLogin}>
                             <S.GoogleImg src={google}/>
                             구글 로그인
                         </S.LoginFromGoolge>
+                        {userData ? userData.displayName : null}
                     </div>
-                    {userData
-                        ? "당신의 이름은 : " + userData.displayName
-                        : "로그인 버튼을 눌러주세요 :)"}
                 </S.LoginInputContainer>
             </S.LoginForm>
         </S.LoginContaienr>
