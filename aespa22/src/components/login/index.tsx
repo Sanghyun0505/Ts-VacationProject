@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { auth } from 'config/firebase-config';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+
 export default function Login(){
     const navigate = useNavigate();
     const [id,SetId] = useState<string>('');
@@ -24,30 +25,31 @@ export default function Login(){
         else SetPw(e.target.value);
     },[]);
 
-    // const onLogin = () => {
-    //     if(id!=='' && pw!==''){
-    //         try {
-    //             const user = signInWithEmailAndPassword(
-    //                 auth,
-    //                 id,
-    //                 pw
-    //             );
-    //             console.log(user);
-    //         } catch (error:any) {
-    //             console.log(error.message);
-    //         }
-    //     }
-    // };
-
     const onLogin = () => {
         if(id!=='' && pw!==''){
-            localStorage.setItem('accessToken',pw);
-            SetId('');
-            SetPw('');
-            window.alert('로그인 성공!');
+            try {
+                const user = signInWithEmailAndPassword(
+                    auth,
+                    id,
+                    pw
+                );
+                console.log(user);
+                window.alert('로그인 성공!');
+            } catch (error:any) {
+                window.alert('로그인 실패!');
+                console.log(error.message);
+            }
         }
-        else window.alert('제대로 입력해주세요!');
     };
+
+    // const onLogin = () => {
+    //     if(id!=='' && pw!==''){
+    //         SetId('');
+    //         SetPw('');
+    //         window.alert('로그인 성공!');
+    //     }
+    //     else window.alert('제대로 입력해주세요!');
+    // };
 
     const handleGoogleLogin = () => {
         const provider = new GoogleAuthProvider(); // provider를 구글로 설정
@@ -55,6 +57,8 @@ export default function Login(){
           .then((data) => {
             setUserData(data.user); // user data 설정
             console.log(data) // console로 들어온 데이터 표시
+            localStorage.setItem('accessToken',userData.displayName);
+            navigate('/');
           })
           .catch((err) => {
             console.log(err);
@@ -97,12 +101,11 @@ export default function Login(){
                         <span style={{cursor:'pointer'}} onClick={()=>navigate('/signup')}> | 회원가입 |</span>
                     </div>
 
-                    <div style={{marginTop:'40px'}}>
+                    <div style={{marginTop:'10px'}}>
                         <S.LoginFromGoolge onClick={handleGoogleLogin}>
                             <S.GoogleImg src={google}/>
                             구글 로그인
                         </S.LoginFromGoolge>
-                        {userData ? userData.displayName : null}
                     </div>
                 </S.LoginInputContainer>
             </S.LoginForm>
